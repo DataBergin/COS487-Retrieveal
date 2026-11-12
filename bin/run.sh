@@ -38,12 +38,18 @@ cd "$REPO_ROOT"
 
 usage() {
     cat <<'EOF'
-Usage: bash bin/run.sh (--prod | --eval) [extra arguments]
+Usage: bash bin/run.sh (--prod | --eval | --neural) [extra arguments]
 
   --prod        Start the production app: FastAPI backend and Vite frontend.
   --eval        Run the evaluation pipeline from apps/evaluation/config.yaml.
                 Extra arguments are forwarded to apps.evaluation.evaluate,
                 such as the path to an alternate config file.
+  --neural      Run the Part 2 neural retrieval experiments (dense and SPLADE).
+                With no arguments every stage runs in order (hours, needs a
+                CUDA GPU). Pass stage names to run only some of them, e.g.
+                  bash bin/run.sh --neural train encode
+                  bash bin/run.sh --neural --dry-run
+                See apps/neural/README.md for the stage list.
   -h, --help    Show this message.
 EOF
 }
@@ -60,7 +66,7 @@ MODE="$1"
 shift
 
 case "$MODE" in
-    --prod|--eval)
+    --prod|--eval|--neural)
         ;;
     -h|--help)
         usage
@@ -226,11 +232,35 @@ run_eval() {
         python -m apps.evaluation.evaluate "$@"
 }
 
+run_neural() {
+    # Part 2 needs the neural libraries on top of the evaluation ones.
+    "$CONDA_EXE" run -n "$ENV_NAME" python -c "import torch, sentence_transformers, transformers, ranx, scipy" >/dev/null 2>&1 || {
+        echo "Error: neural dependencies are not installed."
+        echo "Run: python -m pip install -r requirements.txt"
+        exit 1
+    }
+
+    if [[ ! -d "data/qrels" ]]; then
+        echo "Error: No relevance judgments found at data/qrels/."
+        echo "Download the course data files first (see the README)."
+        exit 1
+    fi
+
+    echo "Repository: $REPO_ROOT"
+    echo
+
+    "$CONDA_EXE" run --no-capture-output -n "$ENV_NAME" \
+        python -m apps.neural.pipeline "$@"
+}
+
 case "$MODE" in
     --prod)
         run_prod
         ;;
     --eval)
         run_eval "$@"
+        ;;
+    --neural)
+        run_neural "$@"
         ;;
 esac

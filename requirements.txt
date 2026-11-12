@@ -1,4 +1,14 @@
 fastapi>=0.115
 uvicorn[standard]>=0.32
-ranx>=0.3
+ranx==0.3.21
 PyYAML>=6.0
+
+# Part 2 (apps/neural): versions used to produce the reported results
+torch==2.11.0
+sentence-transformers==5.5.0
+transformers==5.8.1
+datasets==5.1.0
+accelerate==1.15.0
+numpy==2.4.1
+scipy==1.17.1
+matplotlib==3.10.9

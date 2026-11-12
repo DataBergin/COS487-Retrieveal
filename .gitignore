@@ -5,6 +5,15 @@ dist/
 # project data
 data/
 
+# fine-tuned model checkpoints (large; regenerate with apps/neural/train_*.py)
+models/
+
+# IDE settings
+.vs/
+
+# generated annotation page (rebuild with apps/neural/build_annotation.py)
+docs/annotation/
+
 # local settings
 .env.local
 *.local

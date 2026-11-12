@@ -1,69 +1,36 @@
 # COS487 Information Retrieval - Course Project
-This is a repository intended to host the soon-to-be developed code for the course project assigned in COS487 Information Retrieval at the University of Southern Maine.
+Code for the course project in COS487 Information Retrieval at the University of Southern Maine,
+searching a collection of 34,308 arXiv papers (2,275,574 paragraphs) at the paper and paragraph level.
 
-## Team Details
-Name: Search Party
+- **Part 1** (team project, team name Search Party): TF-IDF and BM25 retrieval, evaluation and a search
+  interface. Only BM25 is used again in Part 2, as the baseline.
+- **Part 2** (individual project by Jack Bergin, team name JackSearchParty): dense (MiniLM) and sparse
+  (SPLADE) neural retrieval with fine-tuning, in `apps/neural/`. See [Part 2: Neural Retrieval](#part-2-neural-retrieval).
 
-Members:
-- Clayton Durepos (Contact)
-- Ella Hawkins
-- Jack Bergin
-- Grace Kalonji
-
-## Repository Structure
-Each part of the project has its own folder under `apps/`.
-
-```text
-data/                  Project data (corpus, processed tokens, indexes)
-bin/                   Install and run scripts
-apps/
-├── processing/        Scripts for pre-processing data
-├── retrieval/         Retrieval systems and index script
-├── evaluation/        Evaluation scripts
-├── prod/
-    ├── backend/           Search service backend
-    └── frontend/          Search interface
-        └── src/
-            ├── api/         Files for API-related functions
-            ├── components/  UI components
-            └── hooks/       Shared browser-side state, such as recent searches
-```
-
-## Use Guide
-
-### Data Setup
-Users must download COS487 Information Retrieval course data files. For installation, ~9GB of disk space is required. Arrange data files as specified below.
-```text
-data/
-├── JSON Files/     Unzipped data corpus
-├── qrels/          QREL files
-├── Study.json
-└── Test.json
-```
-
-### Quick Run
-To launch this application on Linux or MacOS, first set up the data (as outlined above). Then, run the following commands in a bash terminal from the repository root. By default, the backend runs on `localhost:8000` and the frontend runs on `localhost:5173`.
-
-To set up environment and install dependencies:
+### Part 2: Neural Retrieval
+Part 2 (dense and SPLADE retrieval, fine-tuning, evaluation) lives in `apps/neural/`; see
+`apps/neural/README.md` for the details. It is an individual project (team name JackSearchParty).
+After `bash bin/install.sh` (which also installs the neural libraries), run:
 
 ```bash
-bash bin/install.sh
+bash bin/run.sh --neural
 ```
 
-`bin/run.sh` takes the mode to run as its first argument. To launch the search interface:
+This runs every stage in order: Part 1 BM25 runs, corpus extraction, fine-tuning, encoding, search,
+zero-shot comparison, evaluation and significance tests, figures, and packaging of the
+`Retrieval Results/` folder. It takes several hours and needs a CUDA GPU (I used an 8 GB RTX 3050).
+To run only some stages, or to preview the commands:
 
 ```bash
-bash bin/run.sh --prod
+bash bin/run.sh --neural train encode
+bash bin/run.sh --neural --dry-run
 ```
 
-To run the research pipeline:
-
-```bash
-bash bin/run.sh --eval
-```
-
-Edit `apps/evaluation/config.yaml` to change query sets, metrics, levels, and stemming.
-See `apps/evaluation/README.md` for more details.
+The relevance judgments for the Test queries (`JackSearchParty_qrel_part2_test.tsv`) are not produced by this
+command. The top-ranked paragraph of each Test query was graded 0, 1 or 2 with LLM assistance (see
+"Tools used" in `apps/neural/README.md`), using `apps/neural/reporting/build_annotation.py`. They are not
+independent human judgments. Fine-tuned models, embeddings and the corpus are large and are not in git;
+`--neural` regenerates the models and embeddings, and the data setup above provides the corpus.
 
 ### Manual Run
 Install Python dependencies once from the repository root:
@@ -99,29 +66,6 @@ npm run dev
 python -m apps.evaluation.evaluate
 ```
 
-## Course Required Documentation
 
-### Team Member Contributions
 
-#### Clayton Durepos
 
-- Backend System Architecture and Code
-- Evaluation Pipeline
-- `run.sh` branching for `--prod` and `--eval`
-- Post-Integration Frontend Design
-
-#### Ella Hawkins
-
-- Indexer Component
-- BM25 System
-- `install.sh`, `run.sh`
-
-#### Grace Kalonji
-
-- TF-IDF System
-- Frontend Design
-
-#### Jack Bergin
-
-- Preprocessor System
-- Frontend Construction
