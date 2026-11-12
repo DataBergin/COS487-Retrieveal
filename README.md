@@ -4,12 +4,12 @@ searching a collection of 34,308 arXiv papers (2,275,574 paragraphs) at the pape
 
 - **Part 1** (team project, team name Search Party): TF-IDF and BM25 retrieval, evaluation and a search
   interface. Only BM25 is used again in Part 2, as the baseline.
-- **Part 2** (individual project by Jack Bergin, team name JackSearchParty): dense (MiniLM) and sparse
+- **Part 2** (JackSearchParty): dense (MiniLM) and sparse
   (SPLADE) neural retrieval with fine-tuning, in `apps/neural/`. See [Part 2: Neural Retrieval](#part-2-neural-retrieval).
 
 ### Part 2: Neural Retrieval
 Part 2 (dense and SPLADE retrieval, fine-tuning, evaluation) lives in `apps/neural/`; see
-`apps/neural/README.md` for the details. It is an individual project (team name JackSearchParty).
+`apps/neural/README.md` for the details.
 After `bash bin/install.sh` (which also installs the neural libraries), run:
 
 ```bash
@@ -25,12 +25,6 @@ To run only some stages, or to preview the commands:
 bash bin/run.sh --neural train encode
 bash bin/run.sh --neural --dry-run
 ```
-
-The relevance judgments for the Test queries (`JackSearchParty_qrel_part2_test.tsv`) are not produced by this
-command. The top-ranked paragraph of each Test query was graded 0, 1 or 2 with LLM assistance (see
-"Tools used" in `apps/neural/README.md`), using `apps/neural/reporting/build_annotation.py`. They are not
-independent human judgments. Fine-tuned models, embeddings and the corpus are large and are not in git;
-`--neural` regenerates the models and embeddings, and the data setup above provides the corpus.
 
 ### Manual Run
 Install Python dependencies once from the repository root:
