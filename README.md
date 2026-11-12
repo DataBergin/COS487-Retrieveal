@@ -35,31 +35,22 @@ pip install -r requirements.txt
 
 ##### Environment Build
 ```bash
-python -m apps.processing.preprocess
-python -m apps.retrieval.index
+python -m apps.neural.corpus.extract_paragraphs                     
 ```
-
-##### Backend
-From the repository root:
-
+# dense
 ```bash
-uvicorn apps.prod.backend.main:app --reload --port 8000
+python -m apps.neural.training.train_dense --out models/dense_ft       # fine-tune on Train queries, writes loss_log.csv
+python -m apps.neural.indexing.encode_dense --model models/dense_ft --out data/neural/dense_ft
+python -m apps.neural.retrieval.search_dense --emb data/neural/dense_ft --model models/dense_ft --set study
+python -m apps.neural.retrieval.search_dense --emb data/neural/dense_ft --model models/dense_ft --set test
 ```
-
-##### Frontend
-In a second terminal:
-
+# sparse
 ```bash
-cd apps/prod/frontend
-npm install
-npm run dev
+python -m apps.neural.training.train_splade --out models/splade_ft
+python -m apps.neural.indexing.encode_splade --model models/splade_ft --out data/neural/splade_ft
+python -m apps.neural.retrieval.search_splade --emb data/neural/splade_ft --model models/splade_ft --set study
+python -m apps.neural.retrieval.search_splade --emb data/neural/splade_ft --model models/splade_ft --set test
 ```
-
-##### Evaluation
-```bash
-python -m apps.evaluation.evaluate
-```
-
 
 
 
